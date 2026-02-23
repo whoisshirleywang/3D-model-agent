@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>3D 模型生成器</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>3D 模型生成器</h1>
+
+    <!-- Text to 3D -->
+    <section class="panel">
+      <h2>文字生成 3D</h2>
+      <textarea id="textInput" placeholder="输入描述，例如：一辆红色的小汽车玩具" rows="3"></textarea>
+      <button id="textBtn" onclick="generateFromText()">生成 3D 模型</button>
+    </section>
+
+    <!-- Image to 3D -->
+    <section class="panel">
+      <h2>图片生成 3D</h2>
+      <input type="file" id="imageInput" accept="image/*">
+      <button id="imageBtn" onclick="generateFromImage()">从图片生成</button>
+    </section>
+
+    <!-- Status -->
+    <section class="panel" id="statusPanel" style="display:none;">
+      <h2>任务状态</h2>
+      <div class="progress-bar-container">
+        <div class="progress-bar" id="progressBar"></div>
+      </div>
+      <p id="statusText">等待中...</p>
+      <p id="promptText"></p>
+    </section>
+
+    <!-- 3D Viewer -->
+    <section class="panel viewer-panel" id="viewerPanel" style="display:none;">
+      <h2>3D 预览</h2>
+      <div id="viewer"></div>
+      <a id="downloadLink" style="display:none;" class="download-btn">下载模型 (GLB)</a>
+    </section>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
