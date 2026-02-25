@@ -17,6 +17,35 @@
       <button id="textBtn" onclick="generateFromText()">生成 3D 模型</button>
     </section>
 
+    <!-- Text to Image -->
+    <section class="panel">
+      <h2>文字生成图片</h2>
+      <textarea id="textToImageInput" placeholder="输入描述，例如：一只可爱的橘猫坐在窗台上" rows="3"></textarea>
+      <div style="margin-bottom:8px;">
+        <label>模型：</label>
+        <select id="imageModel">
+          <option value="nano-banana">nano-banana</option>
+          <option value="nano-banana-pro">nano-banana-pro</option>
+        </select>
+        <label style="margin-left:12px;">比例：</label>
+        <select id="imageAspectRatio">
+          <option value="1:1">1:1</option>
+          <option value="16:9">16:9</option>
+          <option value="9:16">9:16</option>
+          <option value="4:3">4:3</option>
+          <option value="3:4">3:4</option>
+        </select>
+      </div>
+      <button id="textToImageBtn" onclick="generateTextToImage()">生成图片</button>
+    </section>
+
+    <!-- Generated Image Preview -->
+    <section class="panel" id="imagePreviewPanel" style="display:none;">
+      <h2>生成的图片</h2>
+      <div id="imagePreview" style="text-align:center;"></div>
+      <a id="imageDownloadLink" style="display:none;" class="download-btn" target="_blank">下载图片</a>
+    </section>
+
     <!-- Image to 3D -->
     <section class="panel">
       <h2>图片生成 3D</h2>
@@ -38,7 +67,7 @@
     <section class="panel viewer-panel" id="viewerPanel" style="display:none;">
       <h2>3D 预览</h2>
       <div id="viewer"></div>
-      <a id="downloadLink" style="display:none;" class="download-btn">下载模型 (GLB)</a>
+      <a id="downloadLink" style="display:none;" class="download-btn" target="_blank">下载模型 (GLB)</a>
     </section>
   </div>
 
