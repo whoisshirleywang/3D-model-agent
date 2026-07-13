@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 娃娃众筹平台</title>
+    <link rel="stylesheet" href="css">
+    <link href="script.js" rel="stylesheet">
+</head>
+
+<body>
+    <!-- AI 娃娃生成界面 -->
+    <section id="ai - generator">
+        <h2>用 AI 生成你的专属娃娃</h2>
+        <input type="text" id="prompt - input" placeholder="输入 Prompt">
+        <button onclick="generateAI()">生成</button>
+        <img id="generated - image" alt="AI 娃娃">
+    </section>
+
+    <!-- 娃娃展示页 -->
+    <section id="doll - display">
+        <h2>已生成的 IP 娃娃</h2>
+        <div class="doll - card" id="doll - card - 1">
+            <img src="public/images/doll1.jpg" alt="娃娃 1">
+            <h3>娃娃 1</h3>
+            <p>可爱风格的娃娃</p>
+        </div>
+    </section>
+
+    <!-- 众筹发起模块 -->
+    <section id="crowdfund - create">
+        <h2>发起众筹</h2>
+        <form id="crowdfund - form">
+            <input type="text" placeholder="娃娃名称">
+            <input type="number" placeholder="目标人数">
+            <input type="number" placeholder="预售价格">
+            <input type="text" placeholder="图片链接">
+            <button type="submit" onclick="createCrowdfund(event)">发起众筹</button>
+        </form>
+    </section>
+
+    <!-- 众筹展示模块 -->
+    <section id="crowdfund - display">
+        <h2>众筹项目进展</h2>
+        <div class="crowdfund - card" id="crowdfund - card - 1">
+            <img src="public/images/doll1.jpg" alt="众筹娃娃 1">
+            <h3>娃娃 1 众筹</h3>
+            <p>支持人数：10/50</p>
+            <button>支持众筹</button>
+        </div>
+    </section>
+
+    <!-- 项目故事页（简单示意） -->
+    <section id="project - story">
+        <h2>娃娃 1 的创作故事</h2>
+        <p>这是一个关于娃娃 1 的创作故事...</p>
+        <p>生产进度：正在设计模型</p>
+        <input type="text" placeholder="留下你的留言">
+        <button>提交留言</button>
+    </section>
+
+    <script src="script.js"></script>
+</body>
+
+</html>

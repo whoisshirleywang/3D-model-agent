@@ -1,0 +1,1302 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>AI潮玩DIY - 小程序原型</title>
+<style>
+/* ==========================================
+   AI潮玩DIY 小程序原型 - 设计系统
+   ========================================== */
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --primary: #6C5CE7;
+  --primary-light: #A855F7;
+  --primary-lighter: #C084FC;
+  --primary-bg: #F3F0FF;
+  --accent: #F97316;
+  --success: #10B981;
+  --warning: #F59E0B;
+  --error: #EF4444;
+  --gray-900: #1A1A2E;
+  --gray-700: #374151;
+  --gray-500: #9CA3AF;
+  --gray-200: #E5E7EB;
+  --gray-100: #F3F4F6;
+  --white: #FFFFFF;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --shadow-card: 0 2px 12px rgba(0,0,0,0.08);
+  --shadow-btn: 0 4px 16px rgba(108,92,231,0.30);
+  --font-h1: 24px;
+  --font-h2: 20px;
+  --font-h3: 16px;
+  --font-body: 14px;
+  --font-caption: 12px;
+  --font-small: 10px;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'HarmonyOS Sans', 'Segoe UI', sans-serif;
+  background: #E8E5F0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  color: var(--gray-700);
+}
+
+/* 手机外壳 */
+.phone-frame {
+  width: 375px;
+  height: 812px;
+  background: var(--white);
+  border-radius: 40px;
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.15), 0 0 0 2px #1a1a1a;
+}
+
+/* 状态栏 */
+.status-bar {
+  height: 44px;
+  background: var(--white);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 24px;
+  font-size: var(--font-caption);
+  font-weight: 600;
+  color: var(--gray-900);
+}
+
+/* 页面容器 */
+.screen {
+  height: calc(812px - 44px - 56px - 34px); /* 减去状态栏+导航栏+安全区 */
+  overflow-y: auto;
+  overflow-x: hidden;
+  background: var(--gray-100);
+  position: relative;
+}
+
+.screen::-webkit-scrollbar { display: none; }
+
+/* 底部导航栏 */
+.tab-bar {
+  height: 56px;
+  background: var(--white);
+  border-top: 1px solid var(--gray-200);
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  padding-bottom: 8px;
+}
+
+.tab-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+  padding: 4px 12px;
+  border-radius: var(--radius-md);
+  border: none;
+  background: none;
+  font-family: inherit;
+}
+
+.tab-item .tab-icon { font-size: 22px; }
+.tab-item .tab-label { font-size: var(--font-small); color: var(--gray-500); }
+.tab-item.active .tab-label { color: var(--primary); font-weight: 600; }
+
+.tab-item.cta {
+  margin-top: -20px;
+}
+
+.tab-item.cta .tab-icon {
+  width: 48px; height: 48px;
+  background: linear-gradient(135deg, var(--primary), var(--primary-light));
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 24px;
+  box-shadow: 0 4px 16px rgba(108,92,231,0.40);
+}
+
+.tab-item.cta .tab-label { color: var(--primary); font-weight: 700; }
+
+/* 安全区 */
+.safe-area { height: 34px; background: var(--white); }
+
+/* ==========================================
+   启动页
+   ========================================== */
+.splash-screen {
+  position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+  background: linear-gradient(135deg, var(--primary) 0%, #4C3FD0 50%, var(--primary-light) 100%);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  z-index: 100;
+  transition: opacity 0.5s, transform 0.5s;
+}
+
+.splash-screen.hide {
+  opacity: 0; transform: scale(1.1); pointer-events: none;
+}
+
+.splash-logo {
+  width: 100px; height: 100px;
+  background: rgba(255,255,255,0.15);
+  border-radius: 28px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 56px;
+  margin-bottom: 24px;
+  animation: float 2s ease-in-out infinite;
+  backdrop-filter: blur(10px);
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+.splash-title {
+  color: var(--white);
+  font-size: 28px; font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.splash-subtitle {
+  color: rgba(255,255,255,0.8);
+  font-size: var(--font-body);
+  margin-bottom: 48px;
+}
+
+.splash-dots {
+  display: flex; gap: 8px;
+}
+
+.splash-dot {
+  width: 8px; height: 8px;
+  background: rgba(255,255,255,0.4);
+  border-radius: 50%;
+  animation: dotPulse 1.5s ease-in-out infinite;
+}
+
+.splash-dot:nth-child(2) { animation-delay: 0.2s; }
+.splash-dot:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes dotPulse {
+  0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; }
+  40% { transform: scale(1); opacity: 1; }
+}
+
+/* ==========================================
+   通用组件
+   ========================================== */
+
+/* 页面头部 */
+.page-header {
+  padding: 16px 16px 12px;
+  background: var(--white);
+  position: sticky; top: 0; z-index: 10;
+}
+
+.page-header h1 {
+  font-size: var(--font-h1); font-weight: 700;
+  color: var(--gray-900);
+}
+
+/* 搜索栏 */
+.search-bar {
+  margin: 0 16px 12px;
+  background: var(--white);
+  border: 1.5px solid var(--gray-200);
+  border-radius: var(--radius-xl);
+  padding: 12px 16px;
+  display: flex; align-items: center; gap: 8px;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.search-bar:hover { border-color: var(--primary-light); }
+
+.search-bar .search-icon { font-size: 18px; }
+
+.search-bar .search-placeholder {
+  color: var(--gray-500); font-size: var(--font-body);
+  flex: 1;
+}
+
+/* 标签组 */
+.tag-row {
+  display: flex; gap: 8px;
+  padding: 0 16px 12px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.tag-row::-webkit-scrollbar { display: none; }
+
+.tag {
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: var(--font-caption);
+  white-space: nowrap;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: var(--white);
+  color: var(--gray-700);
+  border: 1px solid var(--gray-200);
+  font-family: inherit;
+}
+
+.tag.active {
+  background: linear-gradient(135deg, var(--primary), var(--primary-light));
+  color: var(--white); border-color: transparent;
+}
+
+/* 作品卡片 */
+.card-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  padding: 0 16px 16px;
+}
+
+.work-card {
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: var(--shadow-card);
+}
+
+.work-card:active { transform: scale(0.97); }
+
+.work-card .card-img {
+  width: 100%; aspect-ratio: 1;
+  background: linear-gradient(135deg, var(--primary-bg), #EDE9FE);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 48px;
+  position: relative;
+}
+
+.work-card .card-img .crowdfund-badge {
+  position: absolute; top: 8px; right: 8px;
+  background: var(--accent); color: white;
+  font-size: var(--font-small); font-weight: 600;
+  padding: 2px 8px; border-radius: 10px;
+}
+
+.work-card .card-info {
+  padding: 10px 12px;
+}
+
+.work-card .card-title {
+  font-size: var(--font-body); font-weight: 600;
+  color: var(--gray-900);
+  margin-bottom: 4px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+
+.work-card .card-meta {
+  font-size: var(--font-small); color: var(--gray-500);
+  display: flex; align-items: center; gap: 8px;
+}
+
+/* 按钮 */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  gap: 6px;
+  border: none; cursor: pointer;
+  font-family: inherit; font-weight: 600;
+  transition: all 0.2s;
+}
+
+.btn:active { transform: scale(0.96); }
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--primary), var(--primary-light));
+  color: var(--white);
+  padding: 14px 32px;
+  border-radius: var(--radius-xl);
+  font-size: var(--font-h3);
+  width: 100%;
+  box-shadow: var(--shadow-btn);
+}
+
+.btn-secondary {
+  background: var(--white);
+  color: var(--primary);
+  padding: 10px 20px;
+  border-radius: var(--radius-xl);
+  border: 1.5px solid var(--primary);
+  font-size: var(--font-body);
+}
+
+.btn-outline {
+  background: transparent;
+  color: var(--gray-700);
+  padding: 8px 16px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--gray-200);
+  font-size: var(--font-caption);
+}
+
+/* 输入框 */
+.input-area {
+  margin: 0 16px;
+  background: var(--white);
+  border: 1.5px solid var(--gray-200);
+  border-radius: var(--radius-lg);
+  padding: 16px;
+  transition: border-color 0.2s;
+}
+
+.input-area:focus-within { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-bg); }
+
+.input-area textarea {
+  width: 100%; border: none; outline: none;
+  font-family: inherit; font-size: var(--font-body);
+  color: var(--gray-900);
+  resize: none;
+  min-height: 80px;
+}
+
+.input-area textarea::placeholder { color: var(--gray-500); }
+
+.input-area .input-footer {
+  display: flex; justify-content: space-between;
+  align-items: center;
+  font-size: var(--font-small); color: var(--gray-500);
+  margin-top: 8px;
+}
+
+/* 区块标题 */
+.section-title {
+  padding: 16px 16px 10px;
+  font-size: var(--font-h3); font-weight: 700;
+  color: var(--gray-900);
+  display: flex; justify-content: space-between;
+  align-items: center;
+}
+
+.section-title .more {
+  font-size: var(--font-caption); color: var(--gray-500);
+  font-weight: 400; cursor: pointer;
+}
+
+/* 示例提示 */
+.hint-chips {
+  display: flex; flex-wrap: wrap; gap: 8px;
+  padding: 0 16px 16px;
+}
+
+.hint-chip {
+  padding: 8px 14px;
+  background: var(--primary-bg);
+  border-radius: var(--radius-xl);
+  font-size: var(--font-caption);
+  color: var(--primary);
+  cursor: pointer;
+  transition: all 0.2s;
+  border: none;
+  font-family: inherit;
+}
+
+.hint-chip:active { background: var(--primary-light); color: white; }
+
+/* ==========================================
+   生成中页面
+   ========================================== */
+.generating-container {
+  display: flex; flex-direction: column;
+  align-items: center;
+  padding: 40px 24px;
+}
+
+.gen-animation {
+  width: 120px; height: 120px;
+  background: linear-gradient(135deg, var(--primary-bg), #EDE9FE);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 56px;
+  margin-bottom: 24px;
+  animation: genPulse 2s ease-in-out infinite;
+}
+
+@keyframes genPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(108,92,231,0.3); }
+  50% { box-shadow: 0 0 0 24px rgba(108,92,231,0); }
+}
+
+.gen-title {
+  font-size: var(--font-h2); font-weight: 700;
+  color: var(--gray-900); margin-bottom: 8px;
+}
+
+.gen-subtitle {
+  font-size: var(--font-body); color: var(--gray-500);
+  margin-bottom: 32px;
+}
+
+.progress-steps {
+  width: 100%;
+  display: flex; flex-direction: column; gap: 16px;
+}
+
+.progress-step {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 16px;
+  background: var(--white);
+  border-radius: var(--radius-md);
+}
+
+.progress-step .step-dot {
+  width: 24px; height: 24px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; flex-shrink: 0;
+}
+
+.progress-step.done .step-dot {
+  background: var(--success); color: white;
+}
+
+.progress-step.active .step-dot {
+  background: var(--primary); color: white;
+  animation: rotate 1.5s linear infinite;
+}
+
+@keyframes rotate {
+  0% { transform: rotate(0deg); box-shadow: 0 0 0 0 rgba(108,92,231,0.4); }
+  50% { box-shadow: 0 0 0 8px rgba(108,92,231,0); }
+  100% { transform: rotate(360deg); box-shadow: 0 0 0 0 rgba(108,92,231,0); }
+}
+
+.progress-step.waiting .step-dot {
+  background: var(--gray-200); color: var(--gray-500);
+}
+
+.progress-step .step-text {
+  font-size: var(--font-body); color: var(--gray-700);
+}
+
+.progress-step.done .step-text { color: var(--success); }
+.progress-step.active .step-text { color: var(--primary); font-weight: 600; }
+.progress-step.waiting .step-text { color: var(--gray-500); }
+
+.progress-bar-wrap {
+  width: 100%; height: 6px;
+  background: var(--gray-200);
+  border-radius: 3px;
+  margin-top: 24px;
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary), var(--primary-light));
+  border-radius: 3px;
+  transition: width 0.5s;
+}
+
+/* ==========================================
+   详情页
+   ========================================== */
+.detail-header {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 16px;
+  background: var(--white);
+  position: sticky; top: 0; z-index: 10;
+}
+
+.back-btn {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  background: var(--gray-100);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; border: none;
+  font-size: 16px;
+}
+
+.back-btn:active { background: var(--gray-200); }
+
+.detail-header .detail-title {
+  font-size: var(--font-h3); font-weight: 600;
+  color: var(--gray-900);
+}
+
+.model-preview {
+  width: 100%; height: 320px;
+  background: linear-gradient(180deg, #1a1a2e 0%, #2d2d44 100%);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.model-preview .model-emoji {
+  font-size: 100px;
+  animation: modelFloat 3s ease-in-out infinite;
+}
+
+@keyframes modelFloat {
+  0%, 100% { transform: translateY(0) rotateY(0deg); }
+  25% { transform: translateY(-10px) rotateY(15deg); }
+  75% { transform: translateY(5px) rotateY(-15deg); }
+}
+
+.model-preview .rotate-hint {
+  position: absolute; bottom: 16px;
+  color: rgba(255,255,255,0.5);
+  font-size: var(--font-small);
+}
+
+.model-actions {
+  display: flex; justify-content: center; gap: 12px;
+  padding: 16px;
+  background: var(--white);
+}
+
+.action-btn {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 4px;
+  padding: 10px 20px;
+  background: var(--gray-100);
+  border-radius: var(--radius-md);
+  cursor: pointer; border: none;
+  font-family: inherit;
+  font-size: var(--font-small);
+  color: var(--gray-700);
+  transition: all 0.2s;
+}
+
+.action-btn:active { background: var(--primary-bg); color: var(--primary); }
+.action-btn .action-icon { font-size: 22px; }
+
+.work-info-card {
+  margin: 12px 16px; padding: 16px;
+  background: var(--white); border-radius: var(--radius-lg);
+}
+
+.work-info-card h3 {
+  font-size: var(--font-h3); font-weight: 700;
+  color: var(--gray-900); margin-bottom: 8px;
+}
+
+.work-info-card .info-row {
+  display: flex; gap: 16px;
+  font-size: var(--font-caption); color: var(--gray-500);
+  margin-bottom: 12px;
+}
+
+.work-info-card .info-row span { display: flex; align-items: center; gap: 4px; }
+
+.interaction-bar {
+  display: flex; gap: 24px;
+  padding: 8px 0;
+}
+
+.interaction-item {
+  display: flex; align-items: center; gap: 4px;
+  font-size: var(--font-body); color: var(--gray-700);
+  cursor: pointer;
+  border: none; background: none; font-family: inherit;
+  transition: all 0.2s;
+}
+
+.interaction-item:active { color: var(--primary); transform: scale(1.1); }
+.interaction-item .interact-icon { font-size: 20px; }
+
+/* 社区页 */
+.community-tabs {
+  display: flex; gap: 0;
+  padding: 0 16px 12px;
+}
+
+.community-tab {
+  flex: 1; text-align: center;
+  padding: 8px 0;
+  font-size: var(--font-body); color: var(--gray-500);
+  cursor: pointer; border-bottom: 2px solid transparent;
+  transition: all 0.2s;
+  border: none; background: none; font-family: inherit;
+}
+
+.community-tab.active {
+  color: var(--primary); font-weight: 600;
+  border-bottom-color: var(--primary);
+}
+
+/* 我的页面 */
+.profile-header {
+  background: linear-gradient(135deg, var(--primary), var(--primary-light));
+  padding: 24px 16px 20px;
+  color: white;
+  text-align: center;
+}
+
+.profile-avatar {
+  width: 72px; height: 72px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.2);
+  margin: 0 auto 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 36px;
+  border: 3px solid rgba(255,255,255,0.3);
+}
+
+.profile-name {
+  font-size: var(--font-h2); font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.profile-level {
+  font-size: var(--font-caption); opacity: 0.8;
+}
+
+.profile-stats {
+  display: flex; justify-content: center; gap: 32px;
+  margin-top: 16px;
+}
+
+.stat-item {
+  text-align: center;
+}
+
+.stat-num {
+  font-size: var(--font-h1); font-weight: 700;
+}
+
+.stat-label {
+  font-size: var(--font-small); opacity: 0.8;
+}
+
+.menu-section {
+  margin: 12px 16px;
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.menu-item {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px;
+  cursor: pointer;
+  border-bottom: 1px solid var(--gray-100);
+  transition: background 0.2s;
+  border: none; background: none; width: 100%;
+  font-family: inherit; font-size: var(--font-body);
+  color: var(--gray-700);
+  text-align: left;
+}
+
+.menu-item:last-child { border-bottom: none; }
+.menu-item:active { background: var(--gray-100); }
+
+.menu-item .menu-left {
+  display: flex; align-items: center; gap: 12px;
+}
+
+.menu-item .menu-icon {
+  font-size: 20px; width: 24px; text-align: center;
+}
+
+/* 隐藏/显示页面 */
+.page { display: none; }
+.page.active { display: block; }
+
+/* Toast */
+.toast {
+  position: fixed; top: 60px; left: 50%; transform: translateX(-50%);
+  background: var(--gray-900); color: white;
+  padding: 12px 24px; border-radius: var(--radius-xl);
+  font-size: var(--font-body);
+  z-index: 200;
+  opacity: 0;
+  transition: opacity 0.3s;
+  pointer-events: none;
+}
+
+.toast.show { opacity: 1; }
+
+/* 响应式：手机上全屏显示 */
+@media (max-width: 400px) {
+  body { background: var(--gray-100); }
+  .phone-frame {
+    width: 100vw; height: 100vh; height: 100dvh;
+    border-radius: 0; box-shadow: none;
+  }
+  .screen { height: calc(100vh - 44px - 56px - 34px); height: calc(100dvh - 44px - 56px - 34px); }
+}
+</style>
+</head>
+<body>
+
+<div class="phone-frame" id="app">
+  <!-- 状态栏 -->
+  <div class="status-bar">
+    <span>9:41</span>
+    <span>📶 🔋 85%</span>
+  </div>
+
+  <!-- ==================== 页面容器 ==================== -->
+  <div class="screen" id="screen">
+
+    <!-- 启动页 -->
+    <div class="splash-screen" id="splash">
+      <div class="splash-logo">🎨</div>
+      <div class="splash-title">AI潮玩DIY</div>
+      <div class="splash-subtitle">用AI创造你的专属潮玩</div>
+      <div class="splash-dots">
+        <div class="splash-dot"></div>
+        <div class="splash-dot"></div>
+        <div class="splash-dot"></div>
+      </div>
+    </div>
+
+    <!-- 页面1：首页 -->
+    <div class="page active" id="page-home">
+      <div class="page-header">
+        <h1>AI潮玩DIY</h1>
+      </div>
+      <div class="search-bar" onclick="navigateTo('generate')">
+        <span class="search-icon">🔍</span>
+        <span class="search-placeholder">描述你想要的潮玩...</span>
+        <span style="font-size:14px;color:var(--gray-400);">✨</span>
+      </div>
+      <div class="tag-row">
+        <button class="tag active" onclick="filterTag(this)">全部</button>
+        <button class="tag" onclick="filterTag(this)">🎨 卡通</button>
+        <button class="tag" onclick="filterTag(this)">📐 写实</button>
+        <button class="tag" onclick="filterTag(this)">🔷 低多边形</button>
+        <button class="tag" onclick="filterTag(this)">🧸 POP MART</button>
+        <button class="tag" onclick="filterTag(this)">🌙 暗黑</button>
+      </div>
+      <div class="section-title">🔥 热门作品 <span class="more">更多 ›</span></div>
+      <div class="card-grid">
+        <div class="work-card" onclick="openDetail('宇航员柯基','🛸','@潮玩达人','2天前','128','56')">
+          <div class="card-img">🛸</div>
+          <div class="card-info">
+            <div class="card-title">宇航员柯基</div>
+            <div class="card-meta">@潮玩达人 · ♥ 128</div>
+          </div>
+        </div>
+        <div class="work-card" onclick="openDetail('赛博柴犬','🐕','@AI玩家','3天前','256','89')">
+          <div class="card-img">🐕</div>
+          <div class="card-info">
+            <div class="card-title">赛博柴犬</div>
+            <div class="card-meta">@AI玩家 · ♥ 256</div>
+          </div>
+        </div>
+        <div class="work-card" onclick="openDetail('龙猫巴士','🚌','@设计小王','1天前','89','34')">
+          <div class="card-img">🚌</div>
+          <div class="card-info">
+            <div class="card-title">龙猫巴士</div>
+            <div class="card-meta">@设计小王 · ♥ 89</div>
+          </div>
+        </div>
+        <div class="work-card" onclick="openDetail('机械猫头鹰','🦉','@Maker','5天前','412','167')">
+          <div class="card-img">
+            🦉
+            <span class="crowdfund-badge">🔥 众筹中</span>
+          </div>
+          <div class="card-info">
+            <div class="card-title">机械猫头鹰</div>
+            <div class="card-meta">@Maker · ♥ 412</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 页面2：AI生成页 -->
+    <div class="page" id="page-generate">
+      <div class="page-header">
+        <h1>✨ AI 生成</h1>
+      </div>
+      <div class="input-area">
+        <textarea id="genInput" placeholder="描述你想要的潮玩，比如：一只戴贝雷帽的胖橘猫，卡通风格，圆脸大眼睛..." maxlength="200"></textarea>
+        <div class="input-footer">
+          <span id="charCount">0 / 200</span>
+        </div>
+      </div>
+      <div style="padding: 12px 16px 8px; font-size: var(--font-caption); color: var(--gray-500); font-weight: 600;">选择风格</div>
+      <div class="tag-row" id="styleTags">
+        <button class="tag active" onclick="selectStyle(this)">🎨 卡通</button>
+        <button class="tag" onclick="selectStyle(this)">📐 写实</button>
+        <button class="tag" onclick="selectStyle(this)">🔷 低多边形</button>
+        <button class="tag" onclick="selectStyle(this)">🧸 POP MART</button>
+        <button class="tag" onclick="selectStyle(this)">🌙 暗黑</button>
+      </div>
+      <div style="padding: 8px 16px 4px; font-size: var(--font-caption); color: var(--gray-500); font-weight: 600;">💡 试试这些</div>
+      <div class="hint-chips">
+        <button class="hint-chip" onclick="fillHint('一只穿宇航服的柯基犬，圆滚滚的身子，透明头盔')">🛸 宇航员柯基</button>
+        <button class="hint-chip" onclick="fillHint('戴墨镜的炸毛橘猫，脖子上挂金链子，拽拽的表情')">😎 拽酷橘猫</button>
+        <button class="hint-chip" onclick="fillHint('梦幻独角兽，彩虹鬃毛，水晶角，星空配色')">🦄 梦幻独角兽</button>
+        <button class="hint-chip" onclick="fillHint('Q版小恐龙，薄荷绿色，背上有一排小蘑菇')">🦕 蘑菇恐龙</button>
+      </div>
+      <div style="padding: 16px;">
+        <button class="btn btn-primary" onclick="startGenerate()">✨ AI 生成</button>
+      </div>
+    </div>
+
+    <!-- 页面3：生成中 -->
+    <div class="page" id="page-generating">
+      <div class="page-header">
+        <h1>AI 生成中</h1>
+      </div>
+      <div class="generating-container">
+        <div class="gen-animation">🎨</div>
+        <div class="gen-title">正在创造你的潮玩...</div>
+        <div class="gen-subtitle" id="genStatus">预计还需 45 秒</div>
+        <div class="progress-bar-wrap">
+          <div class="progress-bar-fill" id="progressFill" style="width: 5%;"></div>
+        </div>
+        <div class="progress-steps" style="margin-top: 24px;">
+          <div class="progress-step done" id="step1">
+            <div class="step-dot">✓</div>
+            <div class="step-text">分析需求</div>
+          </div>
+          <div class="progress-step active" id="step2">
+            <div class="step-dot">⟳</div>
+            <div class="step-text">优化3D生成指令</div>
+          </div>
+          <div class="progress-step waiting" id="step3">
+            <div class="step-dot">3</div>
+            <div class="step-text">生成3D模型</div>
+          </div>
+          <div class="progress-step waiting" id="step4">
+            <div class="step-dot">4</div>
+            <div class="step-text">渲染预览</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 页面4：作品详情 -->
+    <div class="page" id="page-detail">
+      <div class="detail-header">
+        <button class="back-btn" onclick="goBack()">←</button>
+        <span class="detail-title" id="detailTitle">作品详情</span>
+      </div>
+      <div class="model-preview">
+        <div class="model-emoji" id="detailEmoji">🛸</div>
+        <div class="rotate-hint">👆 单指旋转 · 🤏 双指缩放</div>
+      </div>
+      <div class="model-actions">
+        <button class="action-btn" onclick="showToast('已切换自动旋转 🔄')"><span class="action-icon">🔄</span>旋转</button>
+        <button class="action-btn" onclick="showToast('下载链接已复制 📋')"><span class="action-icon">⬇️</span>下载</button>
+        <button class="action-btn" onclick="showToast('分享卡片已生成 ✨')"><span class="action-icon">↗️</span>分享</button>
+        <button class="action-btn" onclick="showToast('已进入众筹页面 🎯')"><span class="action-icon">🎯</span>众筹</button>
+      </div>
+      <div class="work-info-card">
+        <h3 id="detailWorkTitle">宇航员柯基</h3>
+        <div class="info-row">
+          <span id="detailAuthor">@潮玩达人</span>
+          <span id="detailTime">2天前</span>
+          <span>风格：卡通</span>
+        </div>
+        <div class="interaction-bar">
+          <button class="interaction-item" id="likeBtn" onclick="toggleLike()">
+            <span class="interact-icon">🤍</span>
+            <span id="likeCount">128</span>
+          </button>
+          <button class="interaction-item" onclick="showToast('已收藏 ⭐')">
+            <span class="interact-icon">⭐</span>
+            <span id="favCount">56</span>
+          </button>
+          <button class="interaction-item" onclick="showToast('已分享 ↗️')">
+            <span class="interact-icon">↗️</span>
+            <span>32</span>
+          </button>
+        </div>
+      </div>
+      <div style="padding: 0 16px 16px;">
+        <button class="btn btn-secondary" style="width:100%;" onclick="navigateTo('generate')">
+          💡 我也要生成
+        </button>
+      </div>
+    </div>
+
+    <!-- 页面5：社区 -->
+    <div class="page" id="page-community">
+      <div class="page-header">
+        <h1>👥 社区</h1>
+      </div>
+      <div class="community-tabs">
+        <button class="community-tab active" onclick="switchCommunityTab(this)">最新</button>
+        <button class="community-tab" onclick="switchCommunityTab(this)">热门</button>
+        <button class="community-tab" onclick="switchCommunityTab(this)">卡通</button>
+        <button class="community-tab" onclick="switchCommunityTab(this)">众筹中</button>
+      </div>
+      <div class="card-grid">
+        <div class="work-card" onclick="openDetail('汉服小狐狸','🦊','@国风少女','1天前','312','98')">
+          <div class="card-img">🦊</div>
+          <div class="card-info">
+            <div class="card-title">汉服小狐狸</div>
+            <div class="card-meta">@国风少女 · ♥ 312</div>
+          </div>
+        </div>
+        <div class="work-card" onclick="openDetail('蒸汽朋克兔','🐰','@Maker','4天前','187','45')">
+          <div class="card-img">
+            🐰
+            <span class="crowdfund-badge">🔥 众筹中</span>
+          </div>
+          <div class="card-info">
+            <div class="card-title">蒸汽朋克兔</div>
+            <div class="card-meta">@Maker · ♥ 187</div>
+          </div>
+        </div>
+        <div class="work-card" onclick="openDetail('表情包猫猫','😺','@萌宠控','6小时前','56','12')">
+          <div class="card-img">😺</div>
+          <div class="card-info">
+            <div class="card-title">表情包猫猫</div>
+            <div class="card-meta">@萌宠控 · ♥ 56</div>
+          </div>
+        </div>
+        <div class="work-card" onclick="openDetail('暗黑天使像','😇','@暗黑美学','1周前','523','201')">
+          <div class="card-img">😇</div>
+          <div class="card-info">
+            <div class="card-title">暗黑天使像</div>
+            <div class="card-meta">@暗黑美学 · ♥ 523</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 页面6：我的 -->
+    <div class="page" id="page-profile">
+      <div class="profile-header">
+        <div class="profile-avatar">👤</div>
+        <div class="profile-name">潮玩爱好者</div>
+        <div class="profile-level">LV.3 生成达人</div>
+        <div class="profile-stats">
+          <div class="stat-item">
+            <div class="stat-num">12</div>
+            <div class="stat-label">作品</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-num">45</div>
+            <div class="stat-label">收藏</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-num">3</div>
+            <div class="stat-label">众筹</div>
+          </div>
+        </div>
+      </div>
+      <div style="padding: 16px 16px 8px; font-size: var(--font-h3); font-weight: 700; color: var(--gray-900);">我的作品</div>
+      <div class="card-grid">
+        <div class="work-card" onclick="openDetail('我的宇航员柯基','🛸','@我','刚刚','42','18')">
+          <div class="card-img">🛸</div>
+          <div class="card-info">
+            <div class="card-title">宇航员柯基</div>
+            <div class="card-meta">刚刚生成 · ♥ 42</div>
+          </div>
+        </div>
+        <div class="work-card" onclick="openDetail('拽酷橘猫','😎','@我','昨天','28','9')">
+          <div class="card-img">😎</div>
+          <div class="card-info">
+            <div class="card-title">拽酷橘猫</div>
+            <div class="card-meta">昨天 · ♥ 28</div>
+          </div>
+        </div>
+      </div>
+      <div class="menu-section">
+        <button class="menu-item" onclick="showToast('设置页面开发中 ⚙️')">
+          <span class="menu-left"><span class="menu-icon">⚙️</span>账号设置</span>
+          <span>›</span>
+        </button>
+        <button class="menu-item" onclick="showToast('反馈已记录，感谢！💬')">
+          <span class="menu-left"><span class="menu-icon">💬</span>反馈建议</span>
+          <span>›</span>
+        </button>
+        <button class="menu-item" onclick="showToast('AI潮玩DIY v1.0')">
+          <span class="menu-left"><span class="menu-icon">ℹ️</span>关于我们</span>
+          <span>›</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast提示 -->
+  <div class="toast" id="toast"></div>
+
+  <!-- 底部导航栏 -->
+  <div class="tab-bar">
+    <button class="tab-item active" onclick="switchTab('home')" id="tab-home">
+      <span class="tab-icon">🏠</span>
+      <span class="tab-label">首页</span>
+    </button>
+    <button class="tab-item cta" onclick="switchTab('generate')" id="tab-generate">
+      <span class="tab-icon">✨</span>
+      <span class="tab-label">AI生成</span>
+    </button>
+    <button class="tab-item" onclick="switchTab('community')" id="tab-community">
+      <span class="tab-icon">👥</span>
+      <span class="tab-label">社区</span>
+    </button>
+    <button class="tab-item" onclick="switchTab('profile')" id="tab-profile">
+      <span class="tab-icon">👤</span>
+      <span class="tab-label">我的</span>
+    </button>
+  </div>
+
+  <!-- 安全区 -->
+  <div class="safe-area"></div>
+</div>
+
+<script>
+// ==========================================
+// 页面导航
+// ==========================================
+let currentPage = 'home';
+let pageHistory = ['home'];
+
+function hideAllPages() {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+}
+
+function switchTab(tabName) {
+  hideAllPages();
+  document.getElementById('page-' + tabName).classList.add('active');
+  currentPage = tabName;
+  pageHistory = [tabName];
+
+  // 更新tab激活状态
+  document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
+  const tabEl = document.getElementById('tab-' + tabName);
+  if (tabEl) tabEl.classList.add('active');
+
+  // 滚动到顶部
+  document.getElementById('screen').scrollTop = 0;
+}
+
+function navigateTo(pageName) {
+  if (pageName === 'generate') {
+    hideAllPages();
+    document.getElementById('page-generate').classList.add('active');
+    pageHistory.push('generate');
+    currentPage = 'generate';
+    document.getElementById('screen').scrollTop = 0;
+  }
+}
+
+function openDetail(title, emoji, author, time, likes, favs) {
+  hideAllPages();
+  document.getElementById('page-detail').classList.add('active');
+  document.getElementById('detailTitle').textContent = title;
+  document.getElementById('detailEmoji').textContent = emoji;
+  document.getElementById('detailWorkTitle').textContent = title;
+  document.getElementById('detailAuthor').textContent = '@' + (author || '未知');
+  document.getElementById('detailTime').textContent = time || '未知';
+  document.getElementById('likeCount').textContent = likes || '0';
+  document.getElementById('favCount').textContent = favs || '0';
+  document.getElementById('likeBtn').querySelector('.interact-icon').textContent = '🤍';
+  pageHistory.push('detail');
+  currentPage = 'detail';
+  document.getElementById('screen').scrollTop = 0;
+}
+
+function goBack() {
+  pageHistory.pop();
+  const prevPage = pageHistory[pageHistory.length - 1] || 'home';
+  hideAllPages();
+  document.getElementById('page-' + prevPage).classList.add('active');
+  currentPage = prevPage;
+  document.getElementById('screen').scrollTop = 0;
+}
+
+// ==========================================
+// 启动页
+// ==========================================
+setTimeout(() => {
+  document.getElementById('splash').classList.add('hide');
+}, 2000);
+
+// ==========================================
+// 标签切换
+// ==========================================
+function filterTag(el) {
+  el.parentElement.querySelectorAll('.tag').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+}
+
+function selectStyle(el) {
+  el.parentElement.querySelectorAll('.tag').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+}
+
+function switchCommunityTab(el) {
+  el.parentElement.querySelectorAll('.community-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+}
+
+// ==========================================
+// AI生成页交互
+// ==========================================
+const genInput = document.getElementById('genInput');
+if (genInput) {
+  genInput.addEventListener('input', () => {
+    document.getElementById('charCount').textContent = genInput.value.length + ' / 200';
+  });
+}
+
+function fillHint(text) {
+  genInput.value = text;
+  document.getElementById('charCount').textContent = text.length + ' / 200';
+  genInput.focus();
+}
+
+function startGenerate() {
+  const text = genInput.value.trim();
+  if (!text) {
+    showToast('请先描述你想要的潮玩～ 🎨');
+    genInput.focus();
+    return;
+  }
+  // 切换到生成中页面
+  hideAllPages();
+  document.getElementById('page-generating').classList.add('active');
+  currentPage = 'generating';
+  document.getElementById('screen').scrollTop = 0;
+
+  // 模拟生成进度
+  simulateProgress();
+}
+
+function simulateProgress() {
+  const fill = document.getElementById('progressFill');
+  const status = document.getElementById('genStatus');
+  const step2 = document.getElementById('step2');
+  const step3 = document.getElementById('step3');
+  const step4 = document.getElementById('step4');
+
+  let progress = 5;
+  const interval = setInterval(() => {
+    progress += Math.random() * 8 + 2;
+    if (progress > 100) progress = 100;
+    fill.style.width = progress + '%';
+
+    if (progress < 25) {
+      status.textContent = '预计还需 40 秒';
+    } else if (progress < 50) {
+      step2.className = 'progress-step done';
+      step2.querySelector('.step-dot').textContent = '✓';
+      step3.className = 'progress-step active';
+      step3.querySelector('.step-dot').textContent = '⟳';
+      status.textContent = '预计还需 25 秒';
+    } else if (progress < 80) {
+      step3.className = 'progress-step done';
+      step3.querySelector('.step-dot').textContent = '✓';
+      step4.className = 'progress-step active';
+      step4.querySelector('.step-dot').textContent = '⟳';
+      status.textContent = '预计还需 10 秒';
+    } else if (progress >= 100) {
+      clearInterval(interval);
+      step4.className = 'progress-step done';
+      step4.querySelector('.step-dot').textContent = '✓';
+      fill.style.width = '100%';
+      status.textContent = '生成完成！🎉';
+
+      // 自动跳转到详情页
+      setTimeout(() => {
+        openDetail(
+          genInput.value.trim().substring(0, 20) + '...',
+          '✨',
+          '我',
+          '刚刚',
+          '1',
+          '0'
+        );
+      }, 800);
+    }
+  }, 600);
+}
+
+// ==========================================
+// 喜欢按钮
+// ==========================================
+function toggleLike() {
+  const btn = document.getElementById('likeBtn');
+  const icon = btn.querySelector('.interact-icon');
+  const count = document.getElementById('likeCount');
+  if (icon.textContent === '🤍') {
+    icon.textContent = '❤️';
+    count.textContent = parseInt(count.textContent) + 1;
+    showToast('已喜欢 ❤️');
+  } else {
+    icon.textContent = '🤍';
+    count.textContent = parseInt(count.textContent) - 1;
+  }
+}
+
+// ==========================================
+// Toast 提示
+// ==========================================
+let toastTimer;
+function showToast(msg) {
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => {
+    toast.classList.remove('show');
+  }, 1500);
+}
+
+// ==========================================
+// URL Hash 路由（用于截图和直达特定页面）
+// ==========================================
+function handleHashRoute() {
+  const hash = window.location.hash.replace('#', '');
+  if (!hash) return;
+
+  // 隐藏启动页
+  document.getElementById('splash').classList.add('hide');
+
+  const routeMap = {
+    'home': () => switchTab('home'),
+    'generate': () => { hideAllPages(); document.getElementById('page-generate').classList.add('active'); currentPage = 'generate'; },
+    'generating': () => { hideAllPages(); document.getElementById('page-generating').classList.add('active'); currentPage = 'generating'; },
+    'detail': () => {
+      openDetail('宇航员柯基','🛸','@潮玩达人','2天前','128','56');
+    },
+    'community': () => switchTab('community'),
+    'profile': () => switchTab('profile'),
+    'splash': () => {
+      document.getElementById('splash').classList.remove('hide');
+      hideAllPages();
+      document.getElementById('page-home').classList.add('active');
+    }
+  };
+
+  if (routeMap[hash]) {
+    setTimeout(() => routeMap[hash](), 200);
+  }
+}
+
+// 页面加载时检查hash
+window.addEventListener('DOMContentLoaded', handleHashRoute);
+window.addEventListener('hashchange', handleHashRoute);
+
+// ==========================================
+// 键盘快捷键：ESC返回
+// ==========================================
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') goBack();
+});
+
+console.log('🎨 AI潮玩DIY 小程序原型已就绪');
+console.log('📱 在手机浏览器打开体验最佳');
+console.log('🖱️ 点击底部导航切换页面');
+console.log('⌨️ 按 ESC 返回上一页');
+</script>
+</body>
+</html>
