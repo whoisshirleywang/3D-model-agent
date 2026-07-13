@@ -6,3 +6,5 @@ venv/
 node_modules/
 *.glb
 *.stl
+Claude Code对话记录.txt
+对话记录*
